@@ -279,7 +279,7 @@ Fluxo ideal:
 
 Comparação:
 
-Swagger → Define estrutura oficial
+Swagger → Define estrutura oficial                
 Postman → Testa e automatiza
 
 --------------------------------------------------------------------
