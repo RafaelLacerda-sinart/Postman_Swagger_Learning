@@ -2,9 +2,9 @@
 
 Este README reúne conceitos, organização, boas práticas e instruções práticas para uso do Postman e do Swagger no desenvolvimento de APIs REST.
 
-====================================================================
+--------------------------------------------------------------------
 🔷 1. POSTMAN — TESTES, ORGANIZAÇÃO E AUTOMAÇÃO DE APIs
-====================================================================
+--------------------------------------------------------------------
 
 O Postman é uma plataforma completa para testar, validar, automatizar e documentar APIs.
 
@@ -37,7 +37,7 @@ Criar um Workspace por projeto.
 Collections organizam as requisições da API.
 
 Exemplo de estrutura:
-
+```
 API Sistema
 ├── Usuários
 │   ├── GET - Listar Usuários
@@ -47,7 +47,7 @@ API Sistema
 └── Produtos
     ├── GET - Listar Produtos
     ├── POST - Criar Produto
-
+```
 Boas práticas:
 - Separar por domínio
 - Nomear métodos claramente
@@ -75,13 +75,13 @@ Para enviar dados (POST, PUT, PATCH):
 3. Escolher JSON
 
 Exemplo:
-
+```
 {
   "nome": "João Silva",
   "email": "joao@email.com",
   "senha": "123456"
 }
-
+```
 Sempre verificar:
 - Header: Content-Type = application/json
 - JSON válido
@@ -94,10 +94,10 @@ Sempre verificar:
 Evita repetir endereço da API.
 
 Exemplo errado:
-http://localhost:8080/api/usuarios
+```http://localhost:8080/api/usuarios```
 
 Exemplo correto:
-{{baseURL}}/usuarios
+```{{baseURL}}/usuarios```
 
 Criar Environments:
 - Dev
@@ -106,8 +106,8 @@ Criar Environments:
 
 Exemplo de variáveis:
 
-baseURL = http://localhost:8080/api
-token   = eyJhbGciOiJIUzI1NiIsInR...
+```baseURL = http://localhost:8080/api```              
+```token = eyJhbGciOiJIUzI1NiIsInR...```
 
 Benefícios:
 - Alternar ambiente rapidamente
@@ -125,7 +125,7 @@ Tipos comuns:
 
 Exemplo Header:
 
-Authorization: Bearer {{token}}
+```Authorization: Bearer {{token}}```
 
 Boa prática:
 Salvar token como variável de ambiente.
@@ -137,7 +137,7 @@ Salvar token como variável de ambiente.
 Aba "Tests" permite escrever scripts em JavaScript.
 
 Exemplo:
-
+```
 pm.test("Status code é 200", function () {
     pm.response.to.have.status(200);
 });
@@ -146,7 +146,7 @@ pm.test("Resposta contém nome", function () {
     var jsonData = pm.response.json();
     pm.expect(jsonData.nome).to.eql("João Silva");
 });
-
+```
 Utilidades:
 - Validar resposta
 - Automatizar testes
@@ -176,7 +176,7 @@ Na descrição da Collection incluir:
 Registrar resolução de erros:
 
 Exemplo:
-Erro 401 resolvido adicionando Authorization Bearer.
+```Erro 401 resolvido adicionando Authorization Bearer.```         
 Campo email tornou-se obrigatório após ajuste no backend.
 
 Isso evita retrabalho da equipe.
@@ -191,9 +191,9 @@ Boas práticas:
 - Exportar Collection em JSON
 - Versionar junto ao Git
 
-====================================================================
+--------------------------------------------------------------------
 🔷 2. SWAGGER (SMARTBEAR) — DOCUMENTAÇÃO E PADRONIZAÇÃO
-====================================================================
+--------------------------------------------------------------------
 
 O Swagger é um conjunto de ferramentas mantido pela SmartBear para documentação de APIs usando o padrão OpenAPI.
 
@@ -214,7 +214,7 @@ Baseado em um arquivo OpenAPI (YAML ou JSON) que descreve:
 - Códigos de status
 
 Exemplo simplificado:
-
+```
 paths:
   /usuarios:
     get:
@@ -222,6 +222,7 @@ paths:
       responses:
         200:
           description: Lista retornada com sucesso
+```
 
 --------------------------------------------------------------------
 2.2 SWAGGER UI
@@ -251,7 +252,7 @@ Passos gerais:
 3. Gerar documentação automaticamente
 4. Acessar rota:
 
-http://localhost:8080/swagger-ui.html
+```http://localhost:8080/swagger-ui.html```
 
 --------------------------------------------------------------------
 2.4 BOAS PRÁTICAS NO SWAGGER
@@ -263,9 +264,9 @@ http://localhost:8080/swagger-ui.html
 - Versionar API (v1, v2)
 - Documentar autenticação
 
-====================================================================
+--------------------------------------------------------------------
 🔷 3. POSTMAN + SWAGGER JUNTOS
-====================================================================
+--------------------------------------------------------------------
 
 Fluxo ideal:
 
@@ -282,3 +283,229 @@ Swagger → Define estrutura oficial
 Postman → Testa e automatiza
 
 --------------------------------------------------------------------
+
+
+# 📘 COMO UTILIZAR NA PRATICA DO ZERO — FLUXO COM SWAGGER + POSTMAN
+
+Este documento explica o fluxo real de uso do Swagger e do Postman
+em um projeto grande, desde a documentação até os testes completos da API.
+
+--------------------------------------------------------------------
+🔷 1. PAPEL DE CADA FERRAMENTA
+--------------------------------------------------------------------
+
+Ferramenta     | Função Principal                  | Objetivo
+---------------|----------------------------------|------------------------------
+Swagger        | Documentação oficial da API      | Definir contrato da API
+Swagger UI     | Teste rápido via navegador       | Validar estrutura
+Postman        | Testes completos e automatizados | Validar comportamento real
+
+O Swagger define como a API deve funcionar.
+O Postman valida se ela realmente está funcionando corretamente.
+
+--------------------------------------------------------------------
+🔷 2. EXEMPLO DE API
+--------------------------------------------------------------------
+
+Base URL:
+```http://localhost:3000```
+
+Endpoints:
+```
+GET  /usuarios 
+POST /usuarios
+```
+
+--------------------------------------------------------------------
+🔷 3. IMPLEMENTAÇÃO DO SWAGGER (EXEMPLO EXPLICATIVO)
+--------------------------------------------------------------------
+
+Swagger é mantido pela SmartBear e segue o padrão OpenAPI.
+
+Exemplo de configuração:
+```
+import swaggerUi from "swagger-ui-express";
+import swaggerJsdoc from "swagger-jsdoc";
+
+const options = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "API Sistema",
+      version: "1.0.0",
+      description: "Documentação da API de usuários"
+    },
+    servers: [
+      {
+        url: "http://localhost:3000"
+      }
+    ]
+  },
+  apis: ["./src/routes/*.ts"],
+};
+
+const specs = swaggerJsdoc(options);
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(specs));
+```
+Acessar:
+```http://localhost:3000/docs```
+
+--------------------------------------------------------------------
+
+Exemplo documentando um endpoint:
+```
+/**
+ * @swagger
+ * /usuarios:
+ *   get:
+ *     summary: Lista todos usuários
+ *     responses:
+ *       200:
+ *         description: Lista retornada com sucesso
+ */
+```
+Isso gera automaticamente:
+- Método HTTP
+- Descrição
+- Código de resposta
+- Interface visual para teste
+
+--------------------------------------------------------------------
+🔷 4. TESTANDO PELO SWAGGER UI
+--------------------------------------------------------------------
+
+No navegador:
+
+1. Abrir /docs
+2. Selecionar GET /usuarios
+3. Clicar em "Try it out"
+4. Clicar em "Execute"
+
+Swagger executa a requisição real:
+
+Request URL:
+```http://localhost:3000/usuarios```
+
+Resposta exibida:
+
+Campo          | Exemplo
+---------------|-----------------------
+Status         | 200 OK
+Response Body  | JSON com usuários
+Content-Type   | application/json
+
+IMPORTANTE:
+A URL mostrada no Swagger é a mesma usada no Postman.
+
+--------------------------------------------------------------------
+🔷 5. LEVANDO PARA O POSTMAN
+--------------------------------------------------------------------
+
+Criar Workspace do projeto.
+
+Criar Collection organizada:
+```
+API Sistema v1
+├── Auth
+│   └── POST Login
+├── Usuários
+│   ├── GET - Listar
+│   ├── POST - Criar
+│   ├── PUT - Atualizar
+│   └── DELETE - Remover
+```
+--------------------------------------------------------------------
+🔷 6. CRIAR ENVIRONMENT NO POSTMAN
+--------------------------------------------------------------------
+
+Variáveis recomendadas:
+
+Variável   | Valor
+-----------|-------------------------
+baseURL    | http://localhost:3000
+token      | (gerado no login)
+
+Usar nas requisições:
+
+```{{baseURL}}/usuarios```
+
+Isso permite trocar ambiente sem alterar todas as rotas.
+
+--------------------------------------------------------------------
+🔷 7. TESTE GET NO POSTMAN
+--------------------------------------------------------------------
+
+Configuração:
+
+Método: ```GET```            
+URL: ```{{baseURL}}/usuarios```
+
+Verificações:
+
+Verificação        | Esperado
+-------------------|----------
+Status             | 200
+Content-Type       | application/json
+Estrutura JSON     | Array de usuários
+
+--------------------------------------------------------------------
+🔷 8. TESTE POST NO POSTMAN
+--------------------------------------------------------------------
+
+Body → raw → JSON
+```
+{
+  "nome": "Carlos",
+  "email": "carlos@email.com"
+}
+```
+Verificações:
+
+Verificação        | Esperado
+-------------------|----------
+Status             | 201
+Objeto retornado   | Sim
+ID gerado          | Sim
+
+--------------------------------------------------------------------
+🔷 9. TESTES NEGATIVOS (FUNDAMENTAL)
+--------------------------------------------------------------------
+
+Cenário                        | Código Esperado
+--------------------------------|----------------
+Campo obrigatório ausente      | 400
+Token inválido                 | 401
+ID inexistente                 | 404
+Erro interno inesperado        | 500
+
+Isso garante robustez da API.
+
+--------------------------------------------------------------------
+🔷 10. COMPARAÇÃO SWAGGER VS POSTMAN
+--------------------------------------------------------------------
+
+Situação                          | Swagger | Postman
+-----------------------------------|----------|----------
+Ver estrutura da API              | Sim      | Não
+Teste rápido manual               | Sim      | Sim
+Teste automatizado                | Não      | Sim
+Separação por ambientes           | Limitado | Sim
+Testar fluxo completo (CRUD)      | Parcial  | Completo
+
+--------------------------------------------------------------------
+🔷 11. FLUXO PROFISSIONAL COMPLETO
+--------------------------------------------------------------------
+
+Etapa                              | Ferramenta
+------------------------------------|--------------
+Criar endpoint                     | Backend
+Documentar                         | Swagger
+Validar estrutura                  | Swagger UI
+Criar collection organizada        | Postman
+Criar environments                 | Postman
+Testar cenários positivos          | Postman
+Testar cenários negativos          | Postman
+Automatizar validações             | Postman
+Versionar API                      | Swagger + Postman
+
+-------------------------------------------------------------------
