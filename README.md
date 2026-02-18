@@ -58,11 +58,11 @@ Boas práticas:
 1.3 MÉTODOS HTTP
 --------------------------------------------------------------------
 
-GET     → Buscar dados
-POST    → Criar recurso
-PUT     → Atualizar totalmente
-PATCH   → Atualizar parcialmente
-DELETE  → Remover recurso
+GET     → Buscar dados                   
+POST    → Criar recurso                                
+PUT     → Atualizar totalmente                         
+PATCH   → Atualizar parcialmente                         
+DELETE  → Remover recurso                                 
 
 --------------------------------------------------------------------
 1.4 BODY — JSON E RAW
